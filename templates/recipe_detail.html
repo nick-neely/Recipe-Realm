@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+
+{% block content %}
+  {% if current_user.is_authenticated and current_user.id == recipe.author_id %}
+    <a href="{{ url_for('edit_recipe', recipe_id=recipe.id) }}" class="btn btn-primary">Edit</a>
+    <form action="{{ url_for('delete_recipe', recipe_id=recipe.id) }}" method="POST" class="d-inline">
+      <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+  {% endif %}
+
+  <h1>{{ recipe.title }}</h1>
+  <h5>Posted by: {{ recipe.author.username }}</h5>
+  <p><strong>Ingredients:</strong></p>
+  <p>{{ recipe.ingredients }}</p>
+  <p><strong>Steps:</strong></p>
+  <p>{{ recipe.steps }}</p>
+
+  <h2>Comments</h2>
+  {% for comment in comments %}
+    <p>
+      <strong>{{ comment.user.username }}:</strong> {{ comment.content }}
+      <small class="text-muted">{{ comment.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+    </p>
+  {% endfor %}
+
+  {% if current_user.is_authenticated %}
+    <form method="POST">
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+        {{ form.content.label }} {{ form.content(class="form-control") }}
+      </div>
+      {{ form.submit(class="btn btn-primary") }}
+    </form>
+  {% else %}
+    <p>You must be logged in to post a comment.</p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h1>{{ user.username }}'s Profile</h1>
+  <p>Bio: {{ user.bio }}</p>
+  <img src="{{ url_for('static', filename='profile_pics/' + user.profile_picture) }}" alt="Profile Picture">
+  <!-- List of recipes created by the user -->
+  {% for recipe in recipes %}
+    <p>{{ recipe.title }}</p>
+  {% endfor %}
+
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('edit_profile', username=current_user.username) }}" class="btn btn-primary">Edit Profile</a>
+    {% endif %}
+{% endblock %}

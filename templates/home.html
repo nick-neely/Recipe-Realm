@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <h1>RecipeRealm</h1>
+  <p>Welcome to the recipe sharing platform. Find and share your favorite recipes here!</p>
+  
+<!-- Search Form -->
+    <form method="GET" action="{{ url_for('home') }}">
+        <div class="input-group mb-3">
+        <input type="text" name="query" class="form-control" placeholder="Search for recipes..." value="{{ request.args.get('query', '') }}">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit">Search</button>
+        </div>
+        </div>
+    </form>
+
+  <div class="row">
+    {% for recipe in recipes %}
+      <div class="col-md-4">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title">{{ recipe.title }}</h5>
+            <p class="card-text">{{ recipe.ingredients|truncate(100, True) }}</p>
+            <a href="{{ url_for('recipe_detail', recipe_id=recipe.id) }}" class="btn btn-primary">View Recipe</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
