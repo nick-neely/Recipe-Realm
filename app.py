@@ -24,6 +24,7 @@ def save_picture(form_picture):
     
     # Resize the image before saving
     output_size = (125, 125)  # adjust the dimensions as needed
+    
     i = Image.open(form_picture)
     i.thumbnail(output_size)
     i.save(picture_path)
