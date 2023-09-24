@@ -51,7 +51,6 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 @app.route('/')
-@login_required
 def home():
     # Fetch all recipes
     recipes = Recipe.query.all()
