@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed
-from wtforms import StringField, TextAreaField, SubmitField, PasswordField, FileField
+from wtforms import StringField, TextAreaField, SubmitField, PasswordField, FileField, SelectField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Length
-from models import User  # Updated import
+from models import User
+
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -42,3 +43,9 @@ class ProfileForm(FlaskForm):
     bio = TextAreaField('Bio', validators=[Length(max=500)])
     profile_picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
     submit = SubmitField('Update')
+    
+class RatingForm(FlaskForm):
+    rating_value = SelectField('Rating', choices=[(1, '1 - Poor'), (2, '2 - Fair'), (3, '3 - Good'), (4, '4 - Very Good'), (5, '5 - Excellent')], coerce=int)
+    submit = SubmitField('Submit Rating')
+
+

@@ -14,12 +14,31 @@ class User(db.Model, UserMixin):
     bio = db.Column(db.String(500), nullable=True)
     profile_picture = db.Column(db.String(20), nullable=False, default='default.jpg')
 
+
+class Rating(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    value = db.Column(db.Float, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
+
+    # Adding the unique constraint on user_id and recipe_id
+    __table_args__ = (db.UniqueConstraint('user_id', 'recipe_id', name='_user_recipe_uc'),)
+
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     ingredients = db.Column(db.Text, nullable=False)
     steps = db.Column(db.Text, nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    ratings = db.relationship('Rating', backref='recipe', lazy=True)
+
+    @property
+    def average_rating(self):
+        total_ratings = len(self.ratings)
+        if total_ratings == 0:
+            return 0
+        return sum([rating.value for rating in self.ratings]) / total_ratings
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)

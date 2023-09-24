@@ -6,8 +6,8 @@ from flask import Flask, abort, render_template, url_for, flash, redirect, reque
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from forms import RegistrationForm, LoginForm, RecipeForm, CommentForm, ProfileForm
-from models import db, User, Recipe, Comment
+from forms import RegistrationForm, LoginForm, RecipeForm, CommentForm, ProfileForm, RatingForm
+from models import db, User, Recipe, Comment, Rating
 
 def save_picture(form_picture):
     # Create a random hex for our picture filename to avoid any naming conflicts
@@ -50,15 +50,25 @@ migrate = Migrate(app, db)
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-
 @app.route('/')
+@login_required
 def home():
-    query = request.args.get('query')
-    if query:
-        recipes = Recipe.query.filter(Recipe.title.contains(query) | Recipe.ingredients.contains(query)).all()
-    else:
-        recipes = Recipe.query.all()
-    return render_template('home.html', recipes=recipes)
+    # Fetch all recipes
+    recipes = Recipe.query.all()
+
+    # Dictionary to store average ratings for each recipe by its ID
+    avg_ratings = {}
+
+    # Calculate average rating for each recipe
+    for recipe in recipes:
+        ratings = [rating.value for rating in recipe.ratings]
+        if ratings:
+            avg_ratings[recipe.id] = sum(ratings) / len(ratings)
+        else:
+            avg_ratings[recipe.id] = None
+
+    return render_template('home.html', recipes=recipes, avg_ratings=avg_ratings)
+
 
 
 @app.route('/add_recipe', methods=['GET', 'POST'])
@@ -114,15 +124,49 @@ def delete_recipe(recipe_id):
 @app.route('/recipe/<int:recipe_id>', methods=['GET', 'POST'])
 def recipe_detail(recipe_id):
     recipe = Recipe.query.get_or_404(recipe_id)
-    form = CommentForm()
-    if form.validate_on_submit():
-        comment = Comment(content=form.content.data, recipe_id=recipe.id, user_id=current_user.id)
+    form = CommentForm()  # Existing comment form
+    rate_form = RatingForm()  # New rating form
+
+    # Handle comment submission (existing logic)
+    if form.validate_on_submit() and current_user.is_authenticated:
+        comment = Comment(content=form.content.data, user_id=current_user.id, recipe_id=recipe_id)
         db.session.add(comment)
         db.session.commit()
         flash('Your comment has been posted!', 'success')
         return redirect(url_for('recipe_detail', recipe_id=recipe.id))
+    
+    # Handle rating submission
+    if rate_form.validate_on_submit() and current_user.is_authenticated:
+        rating = Rating(value=rate_form.rating_value.data, user_id=current_user.id, recipe_id=recipe_id)
+        db.session.add(rating)
+        db.session.commit()
+        flash('Thanks for rating!', 'success')
+        return redirect(url_for('recipe_detail', recipe_id=recipe.id))
+    
+    # Fetching comments for the recipe (existing logic)
     comments = Comment.query.filter_by(recipe_id=recipe.id).order_by(Comment.timestamp.desc()).all()
-    return render_template('recipe_detail.html', title=recipe.title, recipe=recipe, form=form, comments=comments)
+    
+    return render_template('recipe_detail.html', recipe=recipe, form=form, comments=comments, rate_form=rate_form)
+
+@app.route('/rate_recipe/<int:recipe_id>', methods=['POST'])
+@login_required
+def rate_recipe(recipe_id):
+    form = RatingForm()
+    if form.validate_on_submit():
+        existing_rating = Rating.query.filter_by(user_id=current_user.id, recipe_id=recipe_id).first()
+        
+        if existing_rating:
+            # If a rating exists, update its value
+            existing_rating.value = form.rating_value.data
+        else:
+            # Else, create a new rating
+            rating = Rating(value=form.rating_value.data, user_id=current_user.id, recipe_id=recipe_id)
+            db.session.add(rating)
+
+        db.session.commit()
+        flash('Thanks for rating!', 'success')
+    return redirect(url_for('recipe_detail', recipe_id=recipe_id))
+
 
 
 @app.route("/register", methods=['GET', 'POST'])
