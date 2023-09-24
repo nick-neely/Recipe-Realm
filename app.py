@@ -52,21 +52,22 @@ def load_user(user_id):
 
 @app.route('/')
 def home():
-    # Fetch all recipes
-    recipes = Recipe.query.all()
+    query = request.args.get('query')
+    if query:
+        recipes = Recipe.query.filter(Recipe.title.contains(query) | Recipe.ingredients.contains(query)).all()
+    else:
+        recipes = Recipe.query.all()
 
-    # Dictionary to store average ratings for each recipe by its ID
+    # Calculate the average rating for each recipe and store it in a dictionary
     avg_ratings = {}
-
-    # Calculate average rating for each recipe
     for recipe in recipes:
         ratings = [rating.value for rating in recipe.ratings]
         if ratings:
             avg_ratings[recipe.id] = sum(ratings) / len(ratings)
-        else:
-            avg_ratings[recipe.id] = None
 
     return render_template('home.html', recipes=recipes, avg_ratings=avg_ratings)
+
+
 
 
 
