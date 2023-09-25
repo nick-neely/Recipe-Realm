@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h3>Edit Recipe</h3>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.title.label }} {{ form.title(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.ingredients.label }} {{ form.ingredients(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.steps.label }} {{ form.steps(class="form-control") }}
+    </div>
+    <!-- ... any other fields ... -->
+    <button type="submit" class="btn btn-primary">Update Recipe</button>
+</form>
+{% endblock %}

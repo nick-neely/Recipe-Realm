@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Admin Dashboard</h2>
+
+    <div class="row">
+        <!-- Users Section -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Manage Users
+                </div>
+                <div class="card-body">
+                    <a href="{{ url_for('manage_users') }}" class="btn btn-primary">View All Users</a>
+                    <!-- Add other user management options here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Recipes Section -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Manage Recipes
+                </div>
+                <div class="card-body">
+                    <a href="{{ url_for('manage_recipes') }}" class="btn btn-primary">View All Recipes</a>
+                    <!-- Add other recipe management options here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional sections can be added similarly -->
+</div>
+{% endblock %}

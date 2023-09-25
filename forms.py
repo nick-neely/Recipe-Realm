@@ -48,4 +48,5 @@ class RatingForm(FlaskForm):
     rating_value = SelectField('Rating', choices=[(1, '1 - Poor'), (2, '2 - Fair'), (3, '3 - Good'), (4, '4 - Very Good'), (5, '5 - Excellent')], coerce=int)
     submit = SubmitField('Submit Rating')
 
-
+class AdminEditRecipeForm(RecipeForm):
+    pass  # For now, we'll just inherit everything from RecipeForm.

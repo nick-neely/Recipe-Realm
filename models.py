@@ -13,6 +13,8 @@ class User(db.Model, UserMixin):
     comments = db.relationship('Comment', backref='user', lazy=True)  # Added backref to the Comment model
     bio = db.Column(db.String(500), nullable=True)
     profile_picture = db.Column(db.String(20), nullable=False, default='default.jpg')
+    is_admin = db.Column(db.Boolean, default=False)
+
 
 
 class Rating(db.Model):

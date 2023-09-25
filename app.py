@@ -2,11 +2,12 @@ import os
 import secrets
 from dotenv import load_dotenv
 from PIL import Image
+from functools import wraps
 from flask import Flask, abort, render_template, url_for, flash, redirect, request
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from forms import RegistrationForm, LoginForm, RecipeForm, CommentForm, ProfileForm, RatingForm
+from forms import RegistrationForm, LoginForm, RecipeForm, CommentForm, ProfileForm, RatingForm, AdminEditRecipeForm
 from models import db, User, Recipe, Comment, Rating
 
 def save_picture(form_picture):
@@ -58,6 +59,15 @@ login_manager.login_view = 'login'
 
 migrate = Migrate(app, db)
 
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_admin:
+            flash('You do not have admin access.', 'danger')
+            return redirect(url_for('home'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -78,10 +88,6 @@ def home():
             avg_ratings[recipe.id] = sum(ratings) / len(ratings)
 
     return render_template('home.html', recipes=recipes, avg_ratings=avg_ratings)
-
-
-
-
 
 @app.route('/add_recipe', methods=['GET', 'POST'])
 @login_required
@@ -241,6 +247,73 @@ def edit_profile(username):
         form.bio.data = current_user.bio
 
     return render_template('edit_profile.html', form=form)
+
+@app.route('/admin/dashboard')
+@admin_required
+def admin_dashboard():
+    users = User.query.all()
+    recipes = Recipe.query.all()
+    return render_template('admin_dashboard.html', users=users, recipes=recipes)
+
+@app.route('/admin/users', methods=['GET', 'POST'])
+@admin_required
+def manage_users():
+    users = User.query.all()
+    return render_template('admin_users.html', users=users)
+
+@app.route('/admin/user/<int:user_id>/delete', methods=['POST'])
+@admin_required
+def delete_user(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('manager_users'))
+    db.session.delete(user)
+    db.session.commit()
+    flash('User deleted successfully.', 'success')
+    return redirect(url_for('manager_users'))
+
+@app.route('/admin/recipes', methods=['GET', 'POST'])
+@admin_required
+def manage_recipes():
+    recipes = Recipe.query.all()
+    return render_template('admin_recipes.html', recipes=recipes)
+
+@app.route('/admin/recipe/<int:recipe_id>/delete', methods=['POST'])
+@admin_required
+def admin_delete_recipe(recipe_id):
+    recipe = Recipe.query.get(recipe_id)
+    if not recipe:
+        flash('Recipe not found.', 'danger')
+        return redirect(url_for('admin_recipes'))
+    db.session.delete(recipe)
+    db.session.commit()
+    flash('Recipe deleted successfully.', 'success')
+    return redirect(url_for('admin_recipes'))
+
+@app.route('/admin/recipe/<int:recipe_id>/edit', methods=['GET', 'POST'])
+@admin_required
+def admin_edit_recipe(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)
+    form = AdminEditRecipeForm()
+
+    if form.validate_on_submit():
+        recipe.title = form.title.data
+        recipe.ingredients = form.ingredients.data
+        recipe.steps = form.steps.data
+        # ... any other fields you want to be editable ...
+
+        db.session.commit()
+        flash('Recipe has been updated!', 'success')
+        return redirect(url_for('admin_dashboard'))
+
+    elif request.method == 'GET':
+        form.title.data = recipe.title
+        form.ingredients.data = recipe.ingredients
+        form.steps.data = recipe.steps
+        # ... any other fields ...
+
+    return render_template('admin_edit_recipe.html', form=form, recipe=recipe)
 
 
 if __name__ == '__main__':
