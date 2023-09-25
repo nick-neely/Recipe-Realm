@@ -64,9 +64,9 @@ Follow the instructions below to set up the environment and run this project loc
     ```
     SECRET_KEY=<your-secret-key>
     DATABASE_URL=your_database_url  # Only needed if you're connecting to a remote database
-    FLASK_ENV=development
+    FLASK_ENV=dev
     ```
-    Note: FLASK_ENV=development ensures that the application runs in development mode and will show detailed error messages.
+    Note: FLASK_ENV=dev ensures that the application runs in development mode and will show detailed error messages.
 
 5. **Database Setup**:
 
