@@ -8,7 +8,7 @@ A web-based platform built with Flask where users can share, view, comment on, a
 - **Recipe Management**: Add, edit, and delete recipes.
 - **User Profiles**: View and edit user profiles, including profile pictures and bios.
 - **Comments**: Users can comment on recipes.
-- **Rating**: 
+- **Rating**: Users can rate recipes on a scale. The average rating for each recipe is displayed, providing insights into community preferences and recipe quality.
 - **User-friendly UI**: Leveraging Bootstrap for a responsive and attractive design.
 
 ## Future Improvements
