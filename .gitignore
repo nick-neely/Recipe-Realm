@@ -1,2 +1,2 @@
 /.env
-/recipes.db
+*.db
