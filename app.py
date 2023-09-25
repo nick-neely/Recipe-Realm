@@ -36,10 +36,19 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY')
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
-if DATABASE_URL:
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://")
-app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL or f'sqlite:///{os.path.join(os.getcwd(), "recipes.db")}'
+FLASK_ENV = os.environ.get('FLASK_ENV')
+
+if FLASK_ENV == 'dev':
+    # Use SQLite for local development
+    DATABASE_URI = f'sqlite:///{os.path.join(os.getcwd(), "recipes.db")}'
+else:
+    # Use PostgreSQL on Heroku for production
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    if DATABASE_URL:
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://")
+    DATABASE_URI = DATABASE_URL
+
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)

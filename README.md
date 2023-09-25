@@ -8,39 +8,77 @@ A web-based platform built with Flask where users can share, view, comment on, a
 - **Recipe Management**: Add, edit, and delete recipes.
 - **User Profiles**: View and edit user profiles, including profile pictures and bios.
 - **Comments**: Users can comment on recipes.
+- **Rating**: 
 - **User-friendly UI**: Leveraging Bootstrap for a responsive and attractive design.
+
+## Future Improvements
+- Implement recipe categories or tags for better organization
+- Allow image uploads for recipes
+    
+## Getting Started
+
+Follow the instructions below to set up the environment and run this project locally.
 
 ## Setup and Installation
 
-1. **Clone the Repository**:
+### Prerequisites
+
+- Python 3.x
+- pip
+- virtualenv (optional but recommended)
+
+### Local Development Setup
+
+1. **Clone the repository:**
 
     ```bash
     git clone https://github.com/nick-neely/Recipe-Realm.git
-    cd Recipe-Sharing
     ```
 
-2. **Set Up a Virtual Environment**:
+2. **Navigate to the project directory and create a virtual environment (optional):**
 
     ```bash
-    python -m venv env
-    source env/bin/activate  # On Windows use `env\Scripts\activate`
+    cd recipe-sharing-app
+    virtualenv env
     ```
 
-3. **Install Dependencies**:
+3. **Activate the virtual environment:**
+
+    - On macOS and Linux:
+      ```bash
+      source env/bin/activate
+      ```
+    - On Windows:
+      ```bash
+      .\env\Scripts\activate
+      ```
+
+4. **Install the required Python packages:**
 
     ```bash
     pip install -r requirements.txt
     ```
 
-4. **Environment Variables**:
-   - Create a `.env` file in the root directory.
-   - Add the secret key: `SECRET_KEY=your_secret_key_here`
+5. **Create a `.env` file in the project root and add the following:**
+
+    ```
+    SECRET_KEY=<your-secret-key>
+    DATABASE_URL=your_database_url  # Only needed if you're connecting to a remote database
+    FLASK_ENV=development
+    ```
+    Note: FLASK_ENV=development ensures that the application runs in development mode and will show detailed error messages.
 
 5. **Database Setup**:
 
+    The application uses an SQLite database for development. To set up the database, run the following commands:
+    
     ```bash
+    flask db init
+    flask db migrate
     flask db upgrade
     ```
+
+    Following the migration steps will create the recipes.db SQLite database file for you.
 
 6. **Run the Application**:
 
@@ -49,6 +87,10 @@ A web-based platform built with Flask where users can share, view, comment on, a
     ```
 
     The application should now be running at `http://127.0.0.1:5000/`.
+
+## Deployment
+
+For deployment on Heroku, ensure you set up a PostgreSQL database and link it with your application. The application is configured to use SQLite for local development and PostgreSQL for production.
 
 ## Contributing
 
