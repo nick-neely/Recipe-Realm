@@ -74,15 +74,21 @@ def load_user(user_id):
 
 @app.route('/')
 def home():
+    page = request.args.get('page', 1, type=int)  # Get the current page number
     query = request.args.get('query')
+    
+    # Adjust the query based on whether a search query is provided
     if query:
-        recipes = Recipe.query.filter(Recipe.title.contains(query) | Recipe.ingredients.contains(query)).all()
+        recipes = Recipe.query.filter(Recipe.title.contains(query) | Recipe.ingredients.contains(query))
     else:
-        recipes = Recipe.query.all()
+        recipes = Recipe.query
+    
+    # Use paginate on the query
+    recipes = recipes.paginate(page=page, per_page=9, error_out=False)
 
     # Calculate the average rating for each recipe and store it in a dictionary
     avg_ratings = {}
-    for recipe in recipes:
+    for recipe in recipes.items:
         ratings = [rating.value for rating in recipe.ratings]
         if ratings:
             avg_ratings[recipe.id] = sum(ratings) / len(ratings)
@@ -289,7 +295,7 @@ def admin_delete_recipe(recipe_id):
     db.session.delete(recipe)
     db.session.commit()
     flash('Recipe deleted successfully.', 'success')
-    return redirect(url_for('admin_recipes'))
+    return redirect(url_for('manage_recipes'))
 
 @app.route('/admin/recipe/<int:recipe_id>/edit', methods=['GET', 'POST'])
 @admin_required
@@ -301,17 +307,15 @@ def admin_edit_recipe(recipe_id):
         recipe.title = form.title.data
         recipe.ingredients = form.ingredients.data
         recipe.steps = form.steps.data
-        # ... any other fields you want to be editable ...
 
         db.session.commit()
         flash('Recipe has been updated!', 'success')
-        return redirect(url_for('admin_dashboard'))
+        return redirect(url_for('manage_recipes'))
 
     elif request.method == 'GET':
         form.title.data = recipe.title
         form.ingredients.data = recipe.ingredients
         form.steps.data = recipe.steps
-        # ... any other fields ...
 
     return render_template('admin_edit_recipe.html', form=form, recipe=recipe)
 
