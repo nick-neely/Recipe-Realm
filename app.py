@@ -74,26 +74,26 @@ def load_user(user_id):
 
 @app.route('/')
 def home():
-    page = request.args.get('page', 1, type=int)  # Get the current page number
     query = request.args.get('query')
+    per_page = request.args.get('per_page', default=9, type=int)  # Default to 9 if per_page is not specified
     
-    # Adjust the query based on whether a search query is provided
+    page = request.args.get('page', default=1, type=int)
     if query:
-        recipes = Recipe.query.filter(Recipe.title.contains(query) | Recipe.ingredients.contains(query))
+        pagination = Recipe.query.filter(Recipe.title.contains(query) | Recipe.ingredients.contains(query)).paginate(page=page, per_page=per_page, error_out=False)
     else:
-        recipes = Recipe.query
-    
-    # Use paginate on the query
-    recipes = recipes.paginate(page=page, per_page=9, error_out=False)
+        pagination = Recipe.query.paginate(page=page, per_page=per_page, error_out=False)
+
+    recipes = pagination.items
 
     # Calculate the average rating for each recipe and store it in a dictionary
     avg_ratings = {}
-    for recipe in recipes.items:
+    for recipe in recipes:
         ratings = [rating.value for rating in recipe.ratings]
         if ratings:
             avg_ratings[recipe.id] = sum(ratings) / len(ratings)
 
-    return render_template('home.html', recipes=recipes, avg_ratings=avg_ratings)
+    return render_template('home.html', recipes=recipes, avg_ratings=avg_ratings, pagination=pagination)
+
 
 @app.route('/add_recipe', methods=['GET', 'POST'])
 @login_required
