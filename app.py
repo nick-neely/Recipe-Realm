@@ -228,8 +228,15 @@ def logout():
 @app.route('/user/<string:username>')
 def user_profile(username):
     user = User.query.filter_by(username=username).first_or_404()
-    recipes = Recipe.query.filter_by(author=user).all()
-    return render_template('user_profile.html', user=user, recipes=recipes)
+
+    page = request.args.get('page', default=1, type=int)
+    per_page = request.args.get('per_page', default=9, type=int)  # Default to 9 if per_page is not specified
+
+    pagination = Recipe.query.filter_by(author=user).paginate(page=page, per_page=per_page, error_out=False)
+    recipes = pagination.items
+
+    return render_template('user_profile.html', user=user, recipes=recipes, pagination=pagination, current_per_page=per_page)
+
 
 @app.route('/user/<string:username>/edit', methods=['GET', 'POST'])
 @login_required

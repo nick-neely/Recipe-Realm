@@ -76,40 +76,47 @@
     <div class="container">{% block content %} {% endblock %}</div>
 
     <script>
-      window.onload = function() {
-          let width = window.innerWidth;
-          let currentPath = window.location.pathname;
-          
-          // List of paths where the logic should be applied
-          let allowedPaths = ['/'];
-    
-          let shouldRedirect = allowedPaths.includes(currentPath);
-    
-          if (shouldRedirect) {
-              let params = new URLSearchParams(window.location.search);
-              
-              let currentPerPage = params.get('per_page');
-              let currentPage = params.get('page') || 1;
-              let currentQuery = params.get('query') || "";
-              
-              let redirectRequired = false;
-    
-              // Bootstrap's md breakpoint
-              if (width < 768 && currentPerPage !== "6") {
-                  params.set('per_page', '6');
-                  redirectRequired = true;
-              } else if (width >= 768 && currentPerPage !== "9") {
-                  params.set('per_page', '9');
-                  redirectRequired = true;
-              }
-    
-              if (redirectRequired) {
-                  window.location.search = params.toString();
-              }
-          }
-      }
-    </script>
-    
+      document.addEventListener("DOMContentLoaded", function() {
+    let width = window.innerWidth;
+    let currentPath = window.location.pathname;
+    let currentUrl = window.location.href;
+
+    // Retrieve the current per_page value from the template
+    let currentPerPage = {{ current_per_page }};
+
+    // List of paths where the logic should be applied
+    let allowedPaths = ['/', '/user/'];
+
+    let shouldRedirect = allowedPaths.some(path => currentPath.startsWith(path));
+
+    if (shouldRedirect) {
+        let params = new URLSearchParams(window.location.search);
+
+        let newPerPageValue;
+
+        // Bootstrap's md breakpoint
+        if (width < 768 && currentPerPage !== 6) {
+            newPerPageValue = '6';
+        } else if (width >= 768 && currentPerPage !== 9) {
+            newPerPageValue = '9';
+        }
+
+        // If newPerPageValue is set and it's different from the current per_page value, then we redirect
+        if (newPerPageValue) {
+            params.set('per_page', newPerPageValue);
+            let newUrl = window.location.origin + currentPath + "?" + params.toString();
+
+            // Only redirect if the URL is actually different
+            if (currentUrl !== newUrl) {
+                window.location.href = newUrl;
+            }
+        }
+    }
+});
+
+
+  </script>
+  
     
 
     <!-- Popper.js, then Bootstrap JS -->
