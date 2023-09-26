@@ -22,34 +22,29 @@
 </form>
 
 <div class="row">
-  {% for recipe in recipes.items %}
-  <div class="col-md-4">
-    <div class="card mb-4">
-      <div class="card-body">
-        <h5 class="card-title">{{ recipe.title }}</h5>
-        <p class="card-text">
-          <small class="text-muted"
-            >Posted by: {{ recipe.author.username }}</small
-          >
-        </p>
-        <p class="card-text">
-          {% if avg_ratings[recipe.id] %}
-          <small class="text-muted"
-            >Average Rating: {{ avg_ratings[recipe.id]|round(1) }}/5</small
-          >
-          {% endif %}
-        </p>
-        <p class="card-text">{{ recipe.ingredients|truncate(100, True) }}</p>
-        {% if recipe.average_rating is not none %} {% endif %}
-        <a
-          href="{{ url_for('recipe_detail', recipe_id=recipe.id) }}"
-          class="btn btn-primary"
-          >View Recipe</a
-        >
-      </div>
+  {% for recipe in recipes %}
+<div class="col-md-4 mb-4">
+    <div class="card h-100"> <!-- Fixed card height using h-100 -->
+        <div class="card-body">
+            <h5 class="card-title">{{ recipe.title }}</h5>
+            <p class="card-text text-truncate" style="max-height: 100px; overflow: hidden;">{{ recipe.ingredients }}</p> <!-- Text overflow control -->
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">By: {{ recipe.author.username }}</li>
+        </ul>
+        <div class="card-footer d-flex justify-content-between">
+            <small class="text-muted">
+                {% if recipe.id in avg_ratings %}
+                    &#9733; {{ avg_ratings[recipe.id]|round(1) }}
+                {% else %}
+                    No ratings yet.
+                {% endif %}
+            </small>
+            <a href="{{ url_for('recipe_detail', recipe_id=recipe.id) }}" class="btn btn-primary btn-sm">View</a>
+        </div>
     </div>
-  </div>
-  {% endfor %}
+</div>
+{% endfor %}
 
   <!-- Pagination Controls -->
 {% if recipes.pages > 1 %}

@@ -17,7 +17,7 @@
             <td>{{ recipe.title }}</td>
             <td>{{ recipe.ingredients }}</td>
             <td>
-                <a href="{{ url_for('admin_edit_recipe', recipe_id=recipe.id) }}" class="btn btn-warning m-1">Edit</a>
+                <a href="{{ url_for('admin_edit_recipe', recipe_id=recipe.id) }}" class="btn btn-warning btn-sm mb-2">Edit</a>
                 <form action="{{ url_for('admin_delete_recipe', recipe_id=recipe.id) }}" method="post" class="d-inline">
                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                 </form>
