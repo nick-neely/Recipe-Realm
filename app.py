@@ -92,7 +92,7 @@ def home():
         if ratings:
             avg_ratings[recipe.id] = sum(ratings) / len(ratings)
 
-    return render_template('home.html', recipes=recipes, avg_ratings=avg_ratings, pagination=pagination)
+    return render_template('home.html', recipes=recipes, avg_ratings=avg_ratings, pagination=pagination, current_per_page=per_page)
 
 
 @app.route('/add_recipe', methods=['GET', 'POST'])

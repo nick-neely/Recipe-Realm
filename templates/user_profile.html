@@ -8,7 +8,7 @@
     <!-- User's Profile Picture and Bio -->
     <div class="row mb-4">
         <div class="col-md-2">
-          <img src="{{ url_for('static', filename='profile_pics/' + user.profile_picture) }}" alt="Profile Picture" class="img-fluid rounded-circle">
+          <img src="{{ url_for('static', filename='profile_pics/' + user.profile_picture) }}" alt="Profile Picture" class="img-fluid rounded">
         </div>
         <div class="col-md-10">
             <p class="lead">{{ user.bio or 'No bio provided.' }}</p>
