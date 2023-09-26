@@ -78,28 +78,38 @@
     <script>
       window.onload = function() {
           let width = window.innerWidth;
-          let params = new URLSearchParams(window.location.search);
+          let currentPath = window.location.pathname;
+          
+          // List of paths where the logic should be applied
+          let allowedPaths = ['/'];
     
-          let currentPerPage = params.get('per_page');
-          let currentPage = params.get('page') || 1;
-          let currentQuery = params.get('query') || "";
+          let shouldRedirect = allowedPaths.includes(currentPath);
     
-          let redirectRequired = false;
+          if (shouldRedirect) {
+              let params = new URLSearchParams(window.location.search);
+              
+              let currentPerPage = params.get('per_page');
+              let currentPage = params.get('page') || 1;
+              let currentQuery = params.get('query') || "";
+              
+              let redirectRequired = false;
     
-          // Bootstrap's md breakpoint
-          if (width < 768 && currentPerPage !== "6") {
-              params.set('per_page', '6');
-              redirectRequired = true;
-          } else if (width >= 768 && currentPerPage !== "9") {
-              params.set('per_page', '9');
-              redirectRequired = true;
-          }
+              // Bootstrap's md breakpoint
+              if (width < 768 && currentPerPage !== "6") {
+                  params.set('per_page', '6');
+                  redirectRequired = true;
+              } else if (width >= 768 && currentPerPage !== "9") {
+                  params.set('per_page', '9');
+                  redirectRequired = true;
+              }
     
-          if (redirectRequired) {
-              window.location.search = params.toString();
+              if (redirectRequired) {
+                  window.location.search = params.toString();
+              }
           }
       }
     </script>
+    
     
 
     <!-- Popper.js, then Bootstrap JS -->
