@@ -12,8 +12,11 @@ A web-based platform built with Flask where users can share, view, comment on, a
 - **User-friendly UI**: Leveraging Bootstrap for a responsive and attractive design.
 
 ## Future Improvements
+- Add images to recipes
 - Implement recipe categories or tags for better organization
 - Allow image uploads for recipes
+- Include a sharing system to easily share recipes
+- Email verification and forgotten password reset 
     
 ## Getting Started
 
