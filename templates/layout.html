@@ -19,8 +19,13 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/styles.css') }}"
     />
-
     <title>Recipe Realm</title>
+    <script
+      type="text/javascript"
+      src="https://app.termly.io/embed.min.js"
+      data-auto-block="on"
+      data-website-uuid="1ed79e9a-7cab-4622-993b-cc865f7013e1"
+    ></script>
   </head>
   <body>
     <!-- Navbar -->
@@ -105,6 +110,22 @@
               </li>
               <li><a href="{{ url_for('faq') }}" class="text-white">FAQ</a></li>
               <li>
+                <a
+                  href="#"
+                  onclick="window.displayPreferenceModal();return false;"
+                  id="termly-consent-preferences"
+                  class="text-white"
+                  >Consent Preferences</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://app.termly.io/notify/02bba525-ddff-4cdd-8338-84e370529661"
+                  class="text-white"
+                  >DSAR Form</a
+                >
+              </li>
+              <li>
                 <a href="{{ url_for('terms_of_service') }}" class="text-white"
                   >Terms of Service</a
                 >
@@ -112,6 +133,11 @@
               <li>
                 <a href="{{ url_for('privacy_policy') }}" class="text-white"
                   >Privacy Policy</a
+                >
+              </li>
+              <li>
+                <a href="{{ url_for('cookie_policy') }}" class="text-white"
+                  >Cookie Policy</a
                 >
               </li>
             </ul>
@@ -134,7 +160,7 @@
             ></a>
           </div>
         </div>
-        <div class="row mt-3">
+        <div class="row mt-2">
           <div class="col text-center">
             <p>&copy; {{ year }} Recipe Realm. All Rights Reserved.</p>
           </div>

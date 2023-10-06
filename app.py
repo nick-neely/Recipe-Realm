@@ -340,6 +340,10 @@ def terms_of_service():
 def privacy_policy():
     return render_template('privacy_policy.html', title='Privacy Policy')
 
+@app.route('/cookie_policy')
+def cookie_policy():
+    return render_template('cookie_policy.html', title='Cookie Policy')
+
 @app.route('/about')
 def about():
     return render_template('about.html')
