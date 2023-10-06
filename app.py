@@ -102,8 +102,9 @@ def add_recipe():
         title = request.form['title']
         ingredients = request.form['ingredients']
         steps = request.form['steps']
-        author_id = 1  # For now, we'll just use 1 as the author ID
-        new_recipe = Recipe(title=title, ingredients=ingredients, steps=steps, author_id=author_id)
+        
+        # Associate the recipe with the currently logged-in user
+        new_recipe = Recipe(title=title, ingredients=ingredients, steps=steps, author=current_user)
         db.session.add(new_recipe)
         db.session.commit()
         flash('Recipe has been created!', 'success')
