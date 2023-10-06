@@ -1,5 +1,6 @@
 import os
 import secrets
+from datetime import datetime
 from dotenv import load_dotenv
 from PIL import Image
 from functools import wraps
@@ -102,7 +103,7 @@ def add_recipe():
         title = request.form['title']
         ingredients = request.form['ingredients']
         steps = request.form['steps']
-        
+
         # Associate the recipe with the currently logged-in user
         new_recipe = Recipe(title=title, ingredients=ingredients, steps=steps, author=current_user)
         db.session.add(new_recipe)
@@ -326,6 +327,22 @@ def admin_edit_recipe(recipe_id):
         form.steps.data = recipe.steps
 
     return render_template('admin_edit_recipe.html', form=form, recipe=recipe)
+
+@app.route('/faq')
+def faq():
+    return render_template('faq.html', title='FAQ')
+
+@app.route('/terms_of_service')
+def terms_of_service():
+    return render_template('terms_of_service.html', title='Terms of Service')
+
+@app.route('/privacy_policy')
+def privacy_policy():
+    return render_template('privacy_policy.html', title='Privacy Policy')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 
 if __name__ == '__main__':

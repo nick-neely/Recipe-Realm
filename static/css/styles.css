@@ -1,0 +1,13 @@
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container {
+  flex: 1; /* This will allow the container to grow and push the footer down */
+}
+
+ion-icon {
+  font-size: 32px;
+}
