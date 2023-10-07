@@ -9,7 +9,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(150), nullable=False, unique=True)
     email = db.Column(db.String(150), nullable=False, unique=True)
     password = db.Column(db.String(150), nullable=False)
-    recipes = db.relationship('Recipe', backref='author', lazy=True, cascade="all,delete")
+    recipes = db.relationship('Recipe', backref='author', lazy=True, cascade="all,delete-orphan")
     comments = db.relationship('Comment', backref='user', lazy=True, cascade="all, delete-orphan")
     bio = db.Column(db.String(500), nullable=True)
     profile_picture = db.Column(db.String(20), nullable=False, default='default.jpg')
