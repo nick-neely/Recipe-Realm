@@ -10,7 +10,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(150), nullable=False, unique=True)
     password = db.Column(db.String(150), nullable=False)
     recipes = db.relationship('Recipe', backref='author', lazy=True, cascade="all,delete")
-    comments = db.relationship('Comment', backref='user', lazy=True, cascade="all,delete")
+    comments = db.relationship('Comment', backref='user', lazy=True, cascade="all, delete-orphan")
     bio = db.Column(db.String(500), nullable=True)
     profile_picture = db.Column(db.String(20), nullable=False, default='default.jpg')
     is_admin = db.Column(db.Boolean, default=False)
@@ -32,8 +32,7 @@ class Recipe(db.Model):
     ingredients = db.Column(db.Text, nullable=False)
     steps = db.Column(db.Text, nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-    ratings = db.relationship('Rating', backref='recipe', lazy=True, cascade="all,delete")
+    ratings = db.relationship('Rating', backref='recipe', lazy=True, cascade="all, delete-orphan")
 
     @property
     def average_rating(self):
