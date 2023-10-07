@@ -99,10 +99,11 @@ def home():
 @app.route('/add_recipe', methods=['GET', 'POST'])
 @login_required
 def add_recipe():
-    if request.method == 'POST':
-        title = request.form['title']
-        ingredients = request.form['ingredients']
-        steps = request.form['steps']
+    form = RecipeForm()  # Create a form instance
+    if form.validate_on_submit():
+        title = form.title.data
+        ingredients = form.ingredients.data
+        steps = form.steps.data
 
         # Associate the recipe with the currently logged-in user
         new_recipe = Recipe(title=title, ingredients=ingredients, steps=steps, author=current_user)
@@ -110,7 +111,8 @@ def add_recipe():
         db.session.commit()
         flash('Recipe has been created!', 'success')
         return redirect(url_for('home'))
-    return render_template('add_recipe.html')
+    return render_template('add_recipe.html', form=form)  # Pass the form to the template
+
 
 @app.route('/edit_recipe/<int:recipe_id>', methods=['GET', 'POST'])
 @login_required

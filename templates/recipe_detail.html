@@ -1,38 +1,49 @@
 {% extends "layout.html" %} {% block content %}
-<div class="container mt-4">
+<div class="container mt-5">
   <div class="row">
     <div class="col-md-8">
-      <h1>{{ recipe.title }}</h1>
-      <h6>Posted by: <strong><a href="{{ url_for('user_profile', username=recipe.author.username) }}" class="text-decoration-none text-dark">{{ recipe.author.username }}</a></strong></h6>
-
-      <h6>
+      <h1 class="mb-2">{{ recipe.title }}</h1>
+      <p class="text-muted">
+        Posted by:
+        <a
+          href="{{ url_for('user_profile', username=recipe.author.username) }}"
+          class="text-decoration-none text-dark"
+          >{{ recipe.author.username }}</a
+        >
+      </p>
+      <p class="mb-4">
         Average Rating:
         <span class="badge bg-dark">{{ recipe.average_rating }}</span>
-      </h6>
-      <hr />
-      <p><strong>Ingredients:</strong></p>
-      <p>{{ recipe.ingredients }}</p>
-      <p><strong>Steps:</strong></p>
-      <p>{{ recipe.steps }}</p>
+      </p>
+
+      <div class="mb-4">
+        <h4>Ingredients</h4>
+        <div class="bg-light p-3 rounded">{{ recipe.ingredients|safe }}</div>
+      </div>
+
+      <div class="mb-4">
+        <h4>Steps</h4>
+        <div class="bg-light p-3 rounded">{{ recipe.steps|safe }}</div>
+      </div>
 
       <h3>Comments</h3>
       {% for comment in comments %}
       <div class="card mb-3">
         <div class="card-body">
-          <strong>{{ comment.user.username }}:</strong> {{ comment.content }}
+          <strong>{{ comment.user.username }}</strong>: {{ comment.content }}
         </div>
         <div class="card-footer text-muted">
           {{ comment.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
         </div>
       </div>
       {% endfor %} {% if current_user.is_authenticated %}
-      <h4>Post a Comment</h4>
-      <form method="POST">
+      <h4 class="mt-3">Post a Comment</h4>
+      <form method="POST" class="mb-4">
         {{ form.hidden_tag() }}
         <div class="form-group">
           {{ form.content.label }} {{ form.content(class="form-control") }}
         </div>
-        {{ form.submit(class="btn btn-primary my-2") }}
+        <div>{{ form.submit(class="btn btn-primary") }}</div>
       </form>
       {% else %}
       <div class="alert alert-info" role="alert">
@@ -46,29 +57,35 @@
       recipe.author_id %}
       <a
         href="{{ url_for('edit_recipe', recipe_id=recipe.id) }}"
-        class="btn btn-primary mb-3"
+        class="btn btn-primary mb-3 d-block"
         >Edit Recipe</a
       >
       <form
         action="{{ url_for('delete_recipe', recipe_id=recipe.id) }}"
         method="POST"
+        class="mb-3"
       >
-        <button type="submit" class="btn btn-danger mb-3">Delete Recipe</button>
+        <button type="submit" class="btn btn-danger d-block">
+          Delete Recipe
+        </button>
       </form>
       {% endif %} {% if current_user.is_authenticated %}
-      <h4>Rate this Recipe</h4>
-      <form
-        method="POST"
-        action="{{ url_for('rate_recipe', recipe_id=recipe.id) }}"
-        class="mb-4"
-      >
-        {{ rate_form.hidden_tag() }}
-        <div class="form-group">
-          {{ rate_form.rating_value.label(class="form-label") }} {{
-          rate_form.rating_value(class="form-control") }}
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Rate this Recipe</h5>
+          <form
+            method="POST"
+            action="{{ url_for('rate_recipe', recipe_id=recipe.id) }}"
+          >
+            {{ rate_form.hidden_tag() }}
+            <div class="form-group">
+              {{ rate_form.rating_value.label(class="form-label") }} {{
+              rate_form.rating_value(class="form-control") }}
+            </div>
+            <div>{{ rate_form.submit(class="btn btn-success") }}</div>
+          </form>
         </div>
-        {{ rate_form.submit(class="btn btn-success my-3") }}
-      </form>
+      </div>
       {% endif %}
     </div>
   </div>
