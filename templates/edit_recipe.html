@@ -16,7 +16,8 @@
             <p class="text-muted m-0">
               Tip: After typing the recipe title, press <kbd>Tab</kbd> to move
               to the ingredients editor. To switch between ingredients and
-              steps, press <kbd>Shift</kbd> + <kbd>Tab</kbd>.
+              steps, press <kbd>Shift</kbd> + <kbd>Tab</kbd>. Use
+              <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to submit the recipe.
             </p>
           </div>
 
@@ -148,6 +149,21 @@
     document.querySelector("#ingredients").textContent =
       ingredientsEditor.root.innerHTML;
     document.querySelector("#steps").textContent = stepsEditor.root.innerHTML;
+  });
+
+  // Allow user to submit the form by pressing ctrl + enter
+  document.addEventListener("keydown", function (event) {
+    if (event.ctrlKey && (event.key === "Enter" || event.keyCode === 13)) {
+      event.preventDefault();
+
+      // Populate the hidden textareas
+      document.querySelector("#ingredients").textContent =
+        ingredientsEditor.root.innerHTML;
+      document.querySelector("#steps").textContent = stepsEditor.root.innerHTML;
+
+      // Submit the form
+      document.querySelector("form").submit();
+    }
   });
 </script>
 
