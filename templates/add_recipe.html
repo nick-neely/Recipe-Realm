@@ -1,53 +1,77 @@
 {% extends 'layout.html' %} {% block content %}
-
 <div class="container mt-5">
   <div class="row">
     <div class="col-lg-8 mx-auto">
-      <h2 class="mb-4">Add New Recipe</h2>
-
-      <!-- Recipe Form -->
-      <form
-        action="{{ url_for('add_recipe') }}"
-        method="POST"
-        class="needs-validation"
-        novalidate
-      >
-        {{ form.hidden_tag() }}
-        <div class="form-group">
-          <label for="title">Recipe Title</label>
-          <input
-            type="text"
-            class="form-control"
-            id="title"
-            name="title"
-            required
-          />
-          <div class="invalid-feedback">Please provide a title.</div>
+      <div class="card shadow-lg mb-5">
+        <div class="card-header bg-dark text-light">
+          <h2 class="mb-1">Add New Recipe</h2>
         </div>
+        <div class="card-body">
+          <div class="alert alert-info d-none d-lg-block" id="tabSwitchTip">
+            <p class="text-muted m-0">
+              Tip: After typing the recipe title, press <kbd>Tab</kbd> to move
+              to the ingredients editor. To switch between ingredients and
+              steps, press <kbd>Shift</kbd> + <kbd>Tab</kbd>.
+            </p>
+          </div>
 
-        <div class="form-group mt-4">
-          <label for="ingredients">Ingredients</label>
-          <div id="ingredients-editor" style="height: 200px"></div>
-          <!-- Hidden textarea to store the quill content -->
-          <textarea name="ingredients" id="ingredients" hidden></textarea>
-        </div>
+          <!-- Recipe Form -->
+          <form
+            action="{{ url_for('add_recipe') }}"
+            method="POST"
+            class="needs-validation"
+            novalidate
+          >
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+              <label for="title">Recipe Title</label>
+              <input
+                type="text"
+                class="form-control"
+                id="title"
+                name="title"
+                required
+              />
+              <div class="invalid-feedback">Please provide a title.</div>
+            </div>
 
-        <div class="form-group mt-4">
-          <label for="steps">Steps</label>
-          <div id="steps-editor" style="height: 200px"></div>
-          <!-- Hidden textarea to store the quill content -->
-          <textarea name="steps" id="steps" hidden></textarea>
-        </div>
+            <div class="form-group mt-4">
+              <label for="ingredients">Ingredients</label>
+              <div id="ingredients-editor" style="height: 200px"></div>
+              <!-- Hidden textarea to store the quill content -->
+              <textarea name="ingredients" id="ingredients" hidden></textarea>
+            </div>
 
-        <div class="form-group mt-4">
-          <button type="submit" class="btn btn-primary">Submit Recipe</button>
+            <div class="form-group mt-4">
+              <label for="steps">Steps</label>
+              <div id="steps-editor" style="height: 200px"></div>
+              <!-- Hidden textarea to store the quill content -->
+              <textarea name="steps" id="steps" hidden></textarea>
+            </div>
+
+            <div class="form-group mt-4 card-footer">
+              <button type="submit" class="btn btn-primary">
+                Submit Recipe
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
+  // Check if the user's device is touch-enabled
+  if (
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0 ||
+    navigator.msMaxTouchPoints > 0
+  ) {
+    // If the device is touch-enabled, hide the tab switch tip
+    document.getElementById("tabSwitchTip").style.display = "none";
+  }
+
   // Quill configuration
   var toolbarOptions = [
     ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -80,6 +104,33 @@
     theme: "snow",
   });
 
+  document.addEventListener("DOMContentLoaded", function () {
+    var titleInput = document.getElementById("title");
+    var ingredientsEditorContentEditable = document.querySelector(
+      "#ingredients-editor .ql-editor"
+    );
+
+    titleInput.addEventListener("keydown", function (event) {
+      // Check if the pressed key is "Tab"
+      if (event.key === "Tab" || event.keyCode === 9) {
+        event.preventDefault(); // Prevent the default tab behavior
+        ingredientsEditorContentEditable.focus(); // Focus on the content-editable div inside Quill container for ingredients
+      }
+    });
+  });
+
+  // Ability to press shift + tab to swap between ingredients and steps editors
+  document.addEventListener("keydown", function (event) {
+    if (event.shiftKey && (event.key === "Tab" || event.keyCode === 9)) {
+      event.preventDefault();
+      if (document.activeElement.closest("#ingredients-editor")) {
+        document.querySelector("#steps-editor .ql-editor").focus();
+      } else if (document.activeElement.closest("#steps-editor")) {
+        document.querySelector("#ingredients-editor .ql-editor").focus();
+      }
+    }
+  });
+
   // Add listener to the form to update textareas before submit
   document.querySelector("form").addEventListener("submit", function () {
     document.querySelector("#ingredients").textContent =
@@ -87,5 +138,4 @@
     document.querySelector("#steps").textContent = stepsEditor.root.innerHTML;
   });
 </script>
-
 {% endblock %}
