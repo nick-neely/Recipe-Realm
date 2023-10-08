@@ -37,7 +37,14 @@
         <!-- Text overflow control -->
       </div>
       <ul class="list-group list-group-flush">
-        <li class="list-group-item">By: {{ recipe.author.username }}</li>
+        <li class="list-group-item">
+          By:
+          <a
+            href="{{ url_for('user_profile', username=recipe.author.username) }}"
+            class="text-decoration-none text-dark"
+            >{{ recipe.author.username }}</a
+          >
+        </li>
       </ul>
       <div class="card-footer d-flex justify-content-between">
         <small class="text-muted">
@@ -47,7 +54,7 @@
         </small>
         <a
           href="{{ url_for('recipe_detail', recipe_id=recipe.id) }}"
-          class="btn btn-primary btn-sm"
+          class="btn btn-primary btn"
           >View</a
         >
       </div>
