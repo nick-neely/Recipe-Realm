@@ -50,6 +50,15 @@
               <textarea name="steps" id="steps" hidden></textarea>
             </div>
 
+            <div
+              class="alert alert-danger d-none mt-4"
+              id="emptyFieldsAlert"
+              role="alert"
+            >
+              Please ensure both ingredients and steps are filled out before
+              submitting!
+            </div>
+
             <div class="form-group mt-4 card-footer">
               <button type="submit" class="btn btn-primary" id="submit-button">
                 Submit Recipe
@@ -105,6 +114,7 @@
     theme: "snow",
   });
 
+  // Add a listener for the title input to allow the user to press tab to move to the ingredients editor
   document.addEventListener("DOMContentLoaded", function () {
     var titleInput = document.getElementById("title");
     var ingredientsEditorContentEditable = document.querySelector(
@@ -131,8 +141,39 @@
       }
     }
   });
-  // Add listener to the form to update textareas before submit
-  document.querySelector("form").addEventListener("submit", function () {
+
+  // Add a listener for the submit button to populate the hidden textareas
+  document.querySelector("form").addEventListener("submit", function (event) {
+    // Get the values of the title, ingredients, and steps
+    var titleContent = document.getElementById("title").value.trim();
+    var ingredientsContent = ingredientsEditor.getText().trim();
+    var stepsContent = stepsEditor.getText().trim();
+
+    // Check if the title, ingredients, or steps are empty
+    if (!titleContent || !ingredientsContent || !stepsContent) {
+      event.preventDefault(); // Prevent form submission
+
+      // Show the alert
+      document.getElementById("emptyFieldsAlert").classList.remove("d-none");
+
+      // Update the alert message
+      var alertMessage =
+        "Please ensure all fields are filled out before submitting!";
+      if (!titleContent) {
+        alertMessage = "Please provide a title!";
+      } else if (!ingredientsContent) {
+        alertMessage = "Please provide ingredients!";
+      } else if (!stepsContent) {
+        alertMessage = "Please provide steps!";
+      }
+      document.getElementById("emptyFieldsAlert").innerText = alertMessage;
+
+      return; // Exit the function
+    } else {
+      // If not empty, hide the alert (in case it was previously shown)
+      document.getElementById("emptyFieldsAlert").classList.add("d-none");
+    }
+
     document.querySelector("#ingredients").textContent =
       ingredientsEditor.root.innerHTML;
     document.querySelector("#steps").textContent = stepsEditor.root.innerHTML;
@@ -143,11 +184,39 @@
     if (event.ctrlKey && (event.key === "Enter" || event.keyCode === 13)) {
       event.preventDefault();
 
-      // Populate the hidden textareas
+      // Get the values of the title, ingredients, and steps
+      var titleContent = document.getElementById("title").value.trim();
+      var ingredientsContent = ingredientsEditor.getText().trim();
+      var stepsContent = stepsEditor.getText().trim();
+
+      // Check if the title, ingredients, or steps are empty
+      if (!titleContent || !ingredientsContent || !stepsContent) {
+        event.preventDefault(); // Prevent form submission
+
+        // Show the alert
+        document.getElementById("emptyFieldsAlert").classList.remove("d-none");
+
+        // Update the alert message
+        var alertMessage =
+          "Please ensure all fields are filled out before submitting!";
+        if (!titleContent) {
+          alertMessage = "Please provide a title!";
+        } else if (!ingredientsContent) {
+          alertMessage = "Please provide ingredients!";
+        } else if (!stepsContent) {
+          alertMessage = "Please provide steps!";
+        }
+        document.getElementById("emptyFieldsAlert").innerText = alertMessage;
+
+        return; // Exit the function
+      } else {
+        // If not empty, hide the alert (in case it was previously shown)
+        document.getElementById("emptyFieldsAlert").classList.add("d-none");
+      }
+
       document.querySelector("#ingredients").textContent =
         ingredientsEditor.root.innerHTML;
       document.querySelector("#steps").textContent = stepsEditor.root.innerHTML;
-
       // Submit the form
       document.querySelector("form").submit();
     }
