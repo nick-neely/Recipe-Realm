@@ -24,7 +24,7 @@ def upgrade():
     
     # If the current database is PostgreSQL
     if conn.dialect.name == 'postgresql':
-        
+
         # Get the metadata
         meta = MetaData()
 
@@ -54,8 +54,9 @@ def upgrade():
 def downgrade():
     conn = op.get_bind()
     if conn.dialect.name == 'postgresql':
-        # Reflect current state
-        meta = MetaData(bind=conn)
+        
+        # Get the metadata
+        meta = MetaData()
 
         # Rating Table
         rating = Table('rating', meta, autoload=True)
