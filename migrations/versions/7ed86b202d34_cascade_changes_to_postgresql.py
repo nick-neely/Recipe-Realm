@@ -24,8 +24,10 @@ def upgrade():
     
     # If the current database is PostgreSQL
     if conn.dialect.name == 'postgresql':
-        # Reflect current state
-        meta = MetaData(bind=conn)
+        
+        # Get the metadata
+        meta = MetaData()
+
         rating = Table('rating', meta, autoload=True)
         
         # Drop and recreate the FK with cascade
