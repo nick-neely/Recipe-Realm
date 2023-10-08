@@ -28,7 +28,7 @@ def upgrade():
         # Get the metadata
         meta = MetaData()
 
-        rating = Table('rating', meta, autoload=True)
+        rating = Table('rating', meta, autoload_with=conn)
         
         # Drop and recreate the FK with cascade
         with op.batch_alter_table('rating') as batch_op:
@@ -38,7 +38,7 @@ def upgrade():
             batch_op.create_foreign_key('rating_user_id_fkey', 'user', ['user_id'], ['id'], ondelete='CASCADE')
 
         # Comment Table
-        comment = Table('comment', meta, autoload=True)
+        comment = Table('comment', meta, autoload_with=conn)
         with op.batch_alter_table('comment') as batch_op:
             batch_op.drop_constraint('comment_recipe_id_fkey', type_='foreignkey')
             batch_op.create_foreign_key('comment_recipe_id_fkey', 'recipe', ['recipe_id'], ['id'], ondelete='CASCADE')
@@ -46,7 +46,7 @@ def upgrade():
             batch_op.create_foreign_key('comment_user_id_fkey', 'user', ['user_id'], ['id'], ondelete='CASCADE')
 
         # Recipe Table
-        recipe = Table('recipe', meta, autoload=True)
+        recipe = Table('recipe', meta, autoload_with=conn)
         with op.batch_alter_table('recipe') as batch_op:
             batch_op.drop_constraint('recipe_author_id_fkey', type_='foreignkey')
             batch_op.create_foreign_key('recipe_author_id_fkey', 'user', ['author_id'], ['id'], ondelete='CASCADE')
@@ -54,12 +54,12 @@ def upgrade():
 def downgrade():
     conn = op.get_bind()
     if conn.dialect.name == 'postgresql':
-        
+
         # Get the metadata
         meta = MetaData()
 
         # Rating Table
-        rating = Table('rating', meta, autoload=True)
+        rating = Table('rating', meta, autoload_with=conn)
         with op.batch_alter_table('rating') as batch_op:
             batch_op.drop_constraint('rating_recipe_id_fkey', type_='foreignkey')
             batch_op.create_foreign_key('rating_recipe_id_fkey', 'recipe', ['recipe_id'], ['id'])
@@ -67,7 +67,7 @@ def downgrade():
             batch_op.create_foreign_key('rating_user_id_fkey', 'user', ['user_id'], ['id'])
 
         # Comment Table
-        comment = Table('comment', meta, autoload=True)
+        comment = Table('comment', meta, autoload_with=conn)
         with op.batch_alter_table('comment') as batch_op:
             batch_op.drop_constraint('comment_recipe_id_fkey', type_='foreignkey')
             batch_op.create_foreign_key('comment_recipe_id_fkey', 'recipe', ['recipe_id'], ['id'])
@@ -75,7 +75,7 @@ def downgrade():
             batch_op.create_foreign_key('comment_user_id_fkey', 'user', ['user_id'], ['id'])
 
         # Recipe Table
-        recipe = Table('recipe', meta, autoload=True)
+        recipe = Table('recipe', meta, autoload_with=conn)
         with op.batch_alter_table('recipe') as batch_op:
             batch_op.drop_constraint('recipe_author_id_fkey', type_='foreignkey')
             batch_op.create_foreign_key('recipe_author_id_fkey', 'user', ['author_id'], ['id'])
