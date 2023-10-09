@@ -41,6 +41,9 @@
     );
     const svgOfActiveBtn = btnToActive.querySelector("svg").outerHTML;
 
+    const svgElement = themeSwitcher.querySelector("svg");
+    svgElement.classList.add("theme-icon");
+
     document.querySelectorAll("[data-bs-theme-value]").forEach((element) => {
       element.classList.remove("active");
       element.setAttribute("aria-pressed", "false");

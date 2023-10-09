@@ -12,6 +12,11 @@ ion-icon {
   font-size: 32px;
 }
 
+#bd-theme svg.theme-icon {
+  width: 24px;
+  height: 24px;
+}
+
 /* Default (Light Mode) */
 .themed-navbar {
   background-color: #e3f2fd;

@@ -25,14 +25,13 @@
   {% for recipe in pagination.items %}
   <div class="col-md-4 mb-4">
     <div class="card h-100">
-      <!-- Fixed card height using h-100 -->
       <div class="card-body">
         <h5 class="card-title">{{ recipe.title }}</h5>
         <p
           class="card-text text-truncate"
-          style="max-height: 100px; overflow: hidden"
+          style="max-height: 100px;"
         >
-          {{ recipe.ingredients|striptags|truncate(100) }}
+        {{ recipe.ingredients|replace("<li>", "")|replace("</li>", ", ")|replace("<br>", ", ")|replace("</p>", ", ")|striptags|trim(', ')|truncate(100)|replace(", ", " ,")|replace(" ,", ", ")|safe }}
         </p>
         <!-- Text overflow control -->
       </div>
