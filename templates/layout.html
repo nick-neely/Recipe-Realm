@@ -44,8 +44,8 @@
 
     <!-- Bootstrap CSS -->
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
@@ -70,93 +70,10 @@
     />
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
-    <script>
-      // Dark mode dropdown
-      (() => {
-        "use strict";
-
-        const getStoredTheme = () => localStorage.getItem("theme");
-        const setStoredTheme = (theme) => localStorage.setItem("theme", theme);
-
-        const getPreferredTheme = () => {
-          const storedTheme = getStoredTheme();
-          if (storedTheme) {
-            return storedTheme;
-          }
-
-          return window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light";
-        };
-
-        const setTheme = (theme) => {
-          if (
-            theme === "auto" &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches
-          ) {
-            document.documentElement.setAttribute("data-bs-theme", "dark");
-          } else {
-            document.documentElement.setAttribute("data-bs-theme", theme);
-          }
-        };
-
-        setTheme(getPreferredTheme());
-
-        const showActiveTheme = (theme, focus = false) => {
-          const themeSwitcher = document.querySelector("#bd-theme");
-
-          if (!themeSwitcher) {
-            return;
-          }
-
-          const btnToActive = document.querySelector(
-            `[data-bs-theme-value="${theme}"]`
-          );
-          const svgOfActiveBtn = btnToActive.querySelector("svg").outerHTML;
-
-          document
-            .querySelectorAll("[data-bs-theme-value]")
-            .forEach((element) => {
-              element.classList.remove("active");
-              element.setAttribute("aria-pressed", "false");
-            });
-
-          btnToActive.classList.add("active");
-          btnToActive.setAttribute("aria-pressed", "true");
-          themeSwitcher.innerHTML = svgOfActiveBtn; // Set the SVG of the active theme icon
-          const themeSwitcherLabel = `Theme (${btnToActive.dataset.bsThemeValue})`; // Modified this line
-          themeSwitcher.setAttribute("aria-label", themeSwitcherLabel);
-
-          if (focus) {
-            themeSwitcher.focus();
-          }
-        };
-
-        window
-          .matchMedia("(prefers-color-scheme: dark)")
-          .addEventListener("change", () => {
-            const storedTheme = getStoredTheme();
-            if (storedTheme !== "light" && storedTheme !== "dark") {
-              setTheme(getPreferredTheme());
-            }
-          });
-
-        window.addEventListener("DOMContentLoaded", () => {
-          showActiveTheme(getPreferredTheme());
-
-          document
-            .querySelectorAll("[data-bs-theme-value]")
-            .forEach((toggle) => {
-              toggle.addEventListener("click", () => {
-                const theme = toggle.getAttribute("data-bs-theme-value");
-                setStoredTheme(theme);
-                setTheme(theme);
-                showActiveTheme(theme, true);
-              });
-            });
-        });
-      })();
-    </script>
+    <script
+      data-cfasync="false"
+      src="{{ url_for('static', filename='js/script.js') }}"
+    ></script>
 
     <title>Recipe Realm</title>
   </head>
@@ -411,47 +328,47 @@
     </footer>
 
     <script>
-      // Check if the user's device is touch-enabled
+            // Check if the user's device is touch-enabled
       document.addEventListener("DOMContentLoaded", function () {
-        let width = window.innerWidth;
-        let currentPath = window.location.pathname;
-        let currentUrl = window.location.href;
+          let width = window.innerWidth;
+          let currentPath = window.location.pathname;
+          let currentUrl = window.location.href;
 
-        // Retrieve the current per_page value from the template
-        let currentPerPage = {{ current_per_page }};
+          // Retrieve the current per_page value from the template
+          let currentPerPage = {{ current_per_page }};
 
-        // List of paths where the logic should be applied
-        let allowedPaths = ["/", "/user/"];
+          // List of paths where the logic should be applied
+          let allowedPaths = ["/", "/user/"];
 
-        let shouldRedirect = allowedPaths.some((path) =>
-          currentPath.startsWith(path)
-        );
+          let shouldRedirect = allowedPaths.some((path) =>
+            currentPath.startsWith(path)
+          );
 
-        if (shouldRedirect) {
-          let params = new URLSearchParams(window.location.search);
+          if (shouldRedirect) {
+            let params = new URLSearchParams(window.location.search);
 
-          let newPerPageValue;
+            let newPerPageValue;
 
-          // Bootstrap's md breakpoint
-          if (width < 768 && currentPerPage !== 6) {
-            newPerPageValue = "6";
-          } else if (width >= 768 && currentPerPage !== 9) {
-            newPerPageValue = "9";
-          }
+            // Bootstrap's md breakpoint
+            if (width < 768 && currentPerPage !== 6) {
+              newPerPageValue = "6";
+            } else if (width >= 768 && currentPerPage !== 9) {
+              newPerPageValue = "9";
+            }
 
-          // If newPerPageValue is set and it's different from the current per_page value, then we redirect
-          if (newPerPageValue) {
-            params.set("per_page", newPerPageValue);
-            let newUrl =
-              window.location.origin + currentPath + "?" + params.toString();
+            // If newPerPageValue is set and it's different from the current per_page value, then we redirect
+            if (newPerPageValue) {
+              params.set("per_page", newPerPageValue);
+              let newUrl =
+                window.location.origin + currentPath + "?" + params.toString();
 
-            // Only redirect if the URL is actually different
-            if (currentUrl !== newUrl) {
-              window.location.href = newUrl;
+              // Only redirect if the URL is actually different
+              if (currentUrl !== newUrl) {
+                window.location.href = newUrl;
+              }
             }
           }
-        }
-      });
+        });
     </script>
 
     <script
