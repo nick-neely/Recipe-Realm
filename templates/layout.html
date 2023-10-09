@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="auto">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
@@ -70,13 +70,108 @@
     />
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
+    <script>
+      // Dark mode dropdown
+      (() => {
+        "use strict";
+
+        const getStoredTheme = () => localStorage.getItem("theme");
+        const setStoredTheme = (theme) => localStorage.setItem("theme", theme);
+
+        const getPreferredTheme = () => {
+          const storedTheme = getStoredTheme();
+          if (storedTheme) {
+            return storedTheme;
+          }
+
+          return window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        };
+
+        const setTheme = (theme) => {
+          if (
+            theme === "auto" &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+          ) {
+            document.documentElement.setAttribute("data-bs-theme", "dark");
+          } else {
+            document.documentElement.setAttribute("data-bs-theme", theme);
+          }
+        };
+
+        setTheme(getPreferredTheme());
+
+        const showActiveTheme = (theme, focus = false) => {
+          const themeSwitcher = document.querySelector("#bd-theme");
+
+          if (!themeSwitcher) {
+            return;
+          }
+
+          const btnToActive = document.querySelector(
+            `[data-bs-theme-value="${theme}"]`
+          );
+          const svgOfActiveBtn = btnToActive.querySelector("svg").outerHTML;
+
+          document
+            .querySelectorAll("[data-bs-theme-value]")
+            .forEach((element) => {
+              element.classList.remove("active");
+              element.setAttribute("aria-pressed", "false");
+            });
+
+          btnToActive.classList.add("active");
+          btnToActive.setAttribute("aria-pressed", "true");
+          themeSwitcher.innerHTML = svgOfActiveBtn; // Set the SVG of the active theme icon
+          const themeSwitcherLabel = `Theme (${btnToActive.dataset.bsThemeValue})`; // Modified this line
+          themeSwitcher.setAttribute("aria-label", themeSwitcherLabel);
+
+          if (focus) {
+            themeSwitcher.focus();
+          }
+        };
+
+        window
+          .matchMedia("(prefers-color-scheme: dark)")
+          .addEventListener("change", () => {
+            const storedTheme = getStoredTheme();
+            if (storedTheme !== "light" && storedTheme !== "dark") {
+              setTheme(getPreferredTheme());
+            }
+          });
+
+        window.addEventListener("DOMContentLoaded", () => {
+          showActiveTheme(getPreferredTheme());
+
+          document
+            .querySelectorAll("[data-bs-theme-value]")
+            .forEach((toggle) => {
+              toggle.addEventListener("click", () => {
+                const theme = toggle.getAttribute("data-bs-theme-value");
+                setStoredTheme(theme);
+                setTheme(theme);
+                showActiveTheme(theme, true);
+              });
+            });
+        });
+      })();
+    </script>
+
     <title>Recipe Realm</title>
   </head>
   <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg sticky-top themed-navbar">
       <div class="container-fluid">
-        <a class="navbar-brand" href="{{ url_for('home') }}">Recipe Realm</a>
+        <a class="navbar-brand" href="{{ url_for('home') }}"
+          ><img
+            src="/static/images/recipe-realm-1.jpg"
+            class="d-inline-block rounded mx-2"
+            alt="Recipe Realm"
+            width="50"
+          />Recipe Realm</a
+        >
         <button
           class="navbar-toggler"
           type="button"
@@ -123,6 +218,109 @@
             </li>
             {% endif %}
           </ul>
+          <ul class="navbar-nav ml-auto ms-auto">
+            <li class="nav-item dropdown">
+              <button
+                class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center"
+                type="button"
+                id="bd-theme"
+                data-bs-toggle="dropdown"
+                data-bs-display="static"
+                aria-expanded="false"
+              >
+                <svg
+                  id="themeIcon"
+                  class="bi me-2 opacity-50 theme-icon"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                >
+                  <!-- These paths will be replaced dynamically based on the theme -->
+                  <path id="themePath1" d="" />
+                  <path id="themePath2" d="" />
+                </svg>
+              </button>
+              <ul
+                class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="bd-theme-text"
+              >
+                <li>
+                  <button
+                    class="dropdown-item d-flex align-items-center"
+                    type="button"
+                    data-bs-theme-value="auto"
+                  >
+                    <svg
+                      class="bi me-2 opacity-50 theme-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      class="bi bi-circle-half"
+                      viewBox="0 0 16 16"
+                      data-icon="circle-half"
+                    >
+                      <path
+                        d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"
+                      />
+                    </svg>
+                    Auto
+                  </button>
+                </li>
+                <li>
+                  <button
+                    class="dropdown-item d-flex align-items-center"
+                    type="button"
+                    data-bs-theme-value="light"
+                  >
+                    <svg
+                      class="bi me-2 opacity-50 theme-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      class="bi bi-sun-fill"
+                      viewBox="0 0 16 16"
+                      data-icon="sun-fill"
+                    >
+                      <path
+                        d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"
+                      />
+                    </svg>
+                    Light
+                  </button>
+                </li>
+                <li>
+                  <button
+                    class="dropdown-item d-flex align-items-center"
+                    type="button"
+                    data-bs-theme-value="dark"
+                  >
+                    <svg
+                      class="bi me-2 opacity-50 theme-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      class="bi bi-moon-stars-fill"
+                      viewBox="0 0 16 16"
+                      data-icon="moon-stars-fill"
+                    >
+                      <path
+                        d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"
+                      />
+                      <path
+                        d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"
+                      />
+                    </svg>
+                    Dark
+                  </button>
+                </li>
+              </ul>
+            </li>
+          </ul>
         </div>
       </div>
     </nav>
@@ -137,7 +335,7 @@
     <div class="container">{% block content %} {% endblock %}</div>
 
     <!-- Enhanced Footer -->
-    <footer class="bg-dark text-white mt-5">
+    <footer class="themed-footer mt-5">
       <div class="container py-3">
         <div class="row">
           <div class="col-md-4">
@@ -158,39 +356,31 @@
             <h5>Quick Links</h5>
             <ul class="list-unstyled">
               <li>
-                <a href="{{ url_for('about') }}" class="text-white">About Us</a>
+                <a href="{{ url_for('about') }}">About Us</a>
               </li>
-              <li><a href="{{ url_for('faq') }}" class="text-white">FAQ</a></li>
+              <li><a href="{{ url_for('faq') }}">FAQ</a></li>
               <li>
                 <a
                   href="#"
                   onclick="window.displayPreferenceModal();return false;"
                   id="termly-consent-preferences"
-                  class="text-white"
                   >Consent Preferences</a
                 >
               </li>
               <li>
                 <a
                   href="https://app.termly.io/notify/02bba525-ddff-4cdd-8338-84e370529661"
-                  class="text-white"
                   >DSAR Form</a
                 >
               </li>
               <li>
-                <a href="{{ url_for('terms_of_service') }}" class="text-white"
-                  >Terms of Service</a
-                >
+                <a href="{{ url_for('terms_of_service') }}">Terms of Service</a>
               </li>
               <li>
-                <a href="{{ url_for('privacy_policy') }}" class="text-white"
-                  >Privacy Policy</a
-                >
+                <a href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
               </li>
               <li>
-                <a href="{{ url_for('cookie_policy') }}" class="text-white"
-                  >Cookie Policy</a
-                >
+                <a href="{{ url_for('cookie_policy') }}">Cookie Policy</a>
               </li>
             </ul>
           </div>
@@ -221,6 +411,7 @@
     </footer>
 
     <script>
+      // Check if the user's device is touch-enabled
       document.addEventListener("DOMContentLoaded", function () {
         let width = window.innerWidth;
         let currentPath = window.location.pathname;

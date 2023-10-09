@@ -11,3 +11,66 @@ body {
 ion-icon {
   font-size: 32px;
 }
+
+/* Default (Light Mode) */
+.themed-navbar {
+  background-color: #e3f2fd;
+}
+
+.themed-footer {
+  background-color: rgb(227, 242, 253);
+}
+
+.themed-footer a {
+  color: #1a1d20; /* Black */
+}
+
+.themed-footer {
+  ion-icon {
+    color: #566777;
+  }
+}
+
+.themed-badge {
+  background-color: #e3f2fd;
+}
+
+.themed-ingredients {
+  background-color: #f8f9fa;
+}
+
+.themed-steps {
+  background-color: #f8f9fa;
+}
+
+/* Dark Mode */
+[data-bs-theme="dark"] .themed-navbar {
+  background-color: #1a1d20;
+}
+
+[data-bs-theme="dark"] .themed-footer {
+  background-color: #1a1d20;
+}
+
+[data-bs-theme="dark"] .themed-footer a {
+  color: #e3f2fd;
+}
+
+[data-bs-theme="dark"] .themed-footer {
+  ion-icon {
+    color: #e3f2fd;
+  }
+}
+
+[data-bs-theme="dark"] .themed-badge {
+  background-color: #e3f2fd;
+  color: #1a1d20;
+}
+
+[data-bs-theme="dark"] .themed-ingredients {
+  background-color: #1a1d20;
+}
+
+[data-bs-theme="dark"] .themed-steps {
+  background-color: #1a1d20;
+}

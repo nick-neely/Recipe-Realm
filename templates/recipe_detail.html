@@ -13,17 +13,19 @@
       </p>
       <p class="mb-4">
         Average Rating:
-        <span class="badge bg-dark">{{ recipe.average_rating }}</span>
+        <span class="badge themed-badge">{{ recipe.average_rating }}</span>
       </p>
 
       <div class="mb-4">
         <h4>Ingredients</h4>
-        <div class="bg-light p-3 rounded">{{ recipe.ingredients|safe }}</div>
+        <div class="themed-ingredients p-3 rounded">
+          {{ recipe.ingredients|safe }}
+        </div>
       </div>
 
       <div class="mb-4">
         <h4>Steps</h4>
-        <div class="bg-light p-3 rounded">{{ recipe.steps|safe }}</div>
+        <div class="themed-steps p-3 rounded">{{ recipe.steps|safe }}</div>
       </div>
 
       <h3>Comments</h3>
