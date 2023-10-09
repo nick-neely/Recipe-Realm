@@ -38,6 +38,7 @@ ion-icon {
 
 .themed-badge {
   background-color: #e3f2fd;
+  color: gray;
 }
 
 .themed-ingredients {
