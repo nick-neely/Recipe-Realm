@@ -49,6 +49,10 @@ ion-icon {
   background-color: #f8f9fa;
 }
 
+.themed-author {
+  color: #1a1d20;
+}
+
 /* Dark Mode */
 [data-bs-theme="dark"] .themed-navbar {
   background-color: #1a1d20;
@@ -79,4 +83,8 @@ ion-icon {
 
 [data-bs-theme="dark"] .themed-steps {
   background-color: #1a1d20;
+}
+
+[data-bs-theme="dark"] .themed-author {
+  color: #e3f2fd;
 }
