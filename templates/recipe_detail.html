@@ -32,7 +32,13 @@
       {% for comment in comments %}
       <div class="card mb-3">
         <div class="card-body">
-          <strong>{{ comment.user.username }}</strong>: {{ comment.content }}
+          <strong
+            ><a
+              href="{{ url_for('user_profile', username=comment.user.username) }}"
+              class="themed-author text-decoration-none"
+              >{{ comment.user.username }}</a
+            ></strong
+          >: {{ comment.content }}
         </div>
         <div class="card-footer text-muted">
           {{ comment.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}

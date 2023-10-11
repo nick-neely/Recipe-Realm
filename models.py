@@ -39,7 +39,8 @@ class Recipe(db.Model):
         total_ratings = len(self.ratings)
         if total_ratings == 0:
             return 0
-        return sum([rating.value for rating in self.ratings]) / total_ratings
+        avg = sum([rating.value for rating in self.ratings]) / total_ratings
+        return round(avg, 1)  # Rounding to 2 decimal places
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
