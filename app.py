@@ -80,7 +80,11 @@ def home():
     
     page = request.args.get('page', default=1, type=int)
     if query:
-        pagination = Recipe.query.filter(Recipe.title.contains(query) | Recipe.ingredients.contains(query)).paginate(page=page, per_page=per_page, error_out=False)
+        pagination = Recipe.query.filter(
+        Recipe.title.ilike(f"%{query}%") | 
+        Recipe.ingredients.ilike(f"%{query}%")
+        ).paginate(page=page, per_page=per_page, error_out=False)
+
     else:
         pagination = Recipe.query.paginate(page=page, per_page=per_page, error_out=False)
 
