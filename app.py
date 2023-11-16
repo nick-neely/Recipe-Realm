@@ -1,5 +1,6 @@
 import os
 import secrets
+import cloudinary.uploader
 from datetime import datetime
 from dotenv import load_dotenv
 from PIL import Image
@@ -11,27 +12,31 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from forms import RegistrationForm, LoginForm, RecipeForm, CommentForm, ProfileForm, RatingForm, AdminEditRecipeForm
 from models import db, User, Recipe, Comment, Rating
 
-def save_picture(form_picture):
-    # Create a random hex for our picture filename to avoid any naming conflicts
-    random_hex = secrets.token_hex(8)
+def save_picture(form_picture, old_image_id=None):
+    try:
+        # Check if the old image ID is not the default one before attempting to delete
+        if old_image_id and old_image_id != 'default_k2ay8t':
+            # Delete the old image from Cloudinary before uploading a new one
+            cloudinary.uploader.destroy(old_image_id)
+        
+        # Proceed with uploading the new image and getting the new public ID
+        upload_result = cloudinary.uploader.upload(
+            form_picture,
+            folder='profile_pics/'
+        )
+        
+        # Save the new public ID and URL in the database
+        new_image_id = upload_result['public_id']
+        new_image_url = upload_result['url']
+
+    except Exception as e:
+        # Handle the exception, e.g., log it and return None or re-raise
+        print(f"An error occurred: {e}")
+        return None, None
     
-    # Split the filename and its extension, we only need the extension
-    _, file_extension = os.path.splitext(form_picture.filename)
-    
-    # Construct our new filename
-    picture_filename = random_hex + file_extension
-    
-    # Set our picture path
-    picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_filename)
-    
-    # Resize the image before saving
-    output_size = (125, 125)  # adjust the dimensions as needed
-    
-    i = Image.open(form_picture)
-    i.thumbnail(output_size)
-    i.save(picture_path)
-    
-    return picture_filename
+    # Return both the public ID and the URL
+    return new_image_id, new_image_url
+
 
 load_dotenv()
 
@@ -52,6 +57,11 @@ else:
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Configure Cloudinary
+app.config['CLOUDINARY_CLOUD_NAME'] = os.environ.get('CLOUDINARY_CLOUD_NAME')
+app.config['CLOUDINARY_API_KEY'] = os.environ.get('CLOUDINARY_API_KEY')
+app.config['CLOUDINARY_API_SECRET'] = os.environ.get('CLOUDINARY_API_SECRET')
 
 db.init_app(app)
 bcrypt = Bcrypt(app)
@@ -252,22 +262,39 @@ def edit_profile(username):
     form = ProfileForm()
     if form.validate_on_submit():
         if form.profile_picture.data:
-            picture_file = save_picture(form.profile_picture.data)
-            current_user.profile_picture = picture_file
+            # If the user has a profile image ID and it's not the default,
+            # pass it to save_picture to delete the old image.
+            # Otherwise, pass None to not delete anything.
+            old_image_id = current_user.profile_image_id if current_user.profile_image_id != 'default_k2ay8t' else None
+            new_image_id, picture_url = save_picture(form.profile_picture.data, old_image_id)
 
+            # Check if there was an error during image upload
+            if new_image_id is None:
+                flash('There was an issue uploading the image.', 'danger')
+                return redirect(url_for('edit_profile', username=current_user.username))
+            
+            current_user.profile_picture = picture_url
+            current_user.profile_image_id = new_image_id
+
+        # Update other user fields
         current_user.username = form.username.data
         current_user.email = form.email.data
         current_user.bio = form.bio.data
 
+        # Commit changes to the database
         db.session.commit()
+        
         flash('Your profile has been updated!', 'success')
         return redirect(url_for('user_profile', username=current_user.username))
     elif request.method == 'GET':
+        # Prepopulate form fields with current user data
         form.username.data = current_user.username
         form.email.data = current_user.email
         form.bio.data = current_user.bio
 
+    # Render the profile editing template
     return render_template('edit_profile.html', form=form)
+
 
 @app.route('/admin/dashboard')
 @admin_required

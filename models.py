@@ -12,9 +12,9 @@ class User(db.Model, UserMixin):
     recipes = db.relationship('Recipe', backref='author', lazy=True, cascade="all,delete-orphan")
     comments = db.relationship('Comment', backref='user', lazy=True, cascade="all, delete-orphan")
     bio = db.Column(db.String(500), nullable=True)
-    profile_picture = db.Column(db.String(20), nullable=False, default='default.jpg')
+    profile_picture = db.Column(db.String(255), nullable=False, default='https://res.cloudinary.com/dp1tacdlw/image/upload/v1700097734/default_k2ay8t.jpg')
+    profile_image_id = db.Column(db.String(255), nullable=True)  # Cloudinary public ID
     is_admin = db.Column(db.Boolean, default=False)
-
 
 
 class Rating(db.Model):
