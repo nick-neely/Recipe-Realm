@@ -2,6 +2,9 @@
 
 A web-based platform built with Flask where users can share, view, comment on, and manage their favorite recipes.
 
+![image](https://github.com/nick-neely/Recipe-Realm/assets/49537823/40459628-2485-4da3-8751-bf8cffdc2e12)
+
+
 ## Features
 
 - **User Authentication**: Register, log in, and manage user profiles.
